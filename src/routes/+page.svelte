@@ -1,20 +1,36 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
+	import teams from '$lib/stores/teams';
 
 	export let data: PageServerData;
+
 	let availablePlayers = data.users;
+
+	teams.subscribe((teams) => {
+		console.log(teams.team1);
+		console.log(teams.team2);
+	});
+
 	let game = {
 		date: Date.now(),
 		teams: []
 	};
 
-	$: team1 = {
+	let team1 = {
 		players: []
 	};
 
-	$: team2 = {
+	let team2 = {
 		players: []
 	};
+
+	$: {
+		teams.update((previousTeams) => ({
+			...previousTeams,
+			team1,
+			team2
+		}));
+	}
 
 	function addToTeam(teamNumber: Number, player: any) {
 		if (teamNumber === 1) {
@@ -25,7 +41,9 @@
 			team2.players.push(player);
 			team2.players = team2.players;
 		}
-        availablePlayers = availablePlayers.filter(availablePlayer => availablePlayer.id !== player.id)
+		availablePlayers = availablePlayers.filter(
+			(availablePlayer) => availablePlayer.id !== player.id
+		);
 	}
 </script>
 
